@@ -43,7 +43,7 @@ footer{font:11px/1.4 system-ui,sans-serif;color:var(--muted);padding:0 14px 8px;
 <div><h1>Beto Gómez, el Cronista</h1><div class="sub">Historias de El Colorado, Formosa</div></div>
 <div class="tools"><button id="vz" title="Activar o silenciar la voz" aria-label="Voz">🔇</button></div>
 </header>
-<div class="aviso"><b>Transparencia:</b> Beto es un <b>humano digital educativo</b>, una inteligencia artificial creada para un trabajo de Ética con fines culturales. No es una persona real. Sus respuestas son breves resúmenes de fuentes de clase y pueden tener imprecisiones: si detectás un error, es involuntario y se corrige.</div>
+<div class="aviso"><b>Transparencia:</b> Beto es un <b>humano digital educativo</b>, una inteligencia artificial creada para un trabajo de Ética con fines culturales. No es una persona real. Sus respuestas son breves resúmenes de fuentes de historia local y pueden tener imprecisiones: si detectás un error, es involuntario y se corrige.</div>
 <div id="chat" role="log" aria-live="polite"></div>
 <div class="chips" id="chips"></div>
 <form id="f"><input id="q" autocomplete="off" placeholder="Preguntale algo a Beto…" aria-label="Tu pregunta"><button type="button" id="mic" title="Hablar con Beto" aria-label="Hablar con Beto">🎤</button><button>Enviar</button></form>
@@ -53,14 +53,14 @@ footer{font:11px/1.4 system-ui,sans-serif;color:var(--muted);padding:0 14px 8px;
 // ===== BASE DE CONOCIMIENTO =====
 // Editá acá: k = palabras clave (sin tildes, minúsculas), t = respuesta, s = fuente.
 // Los relatos marcados PENDIENTE no tienen texto cargado todavía: Beto no inventa.
-var D="Resumen del dossier histórico de clase (Prof. Cóceres)";
+var D="Dossier histórico de El Colorado (Prof. Cóceres)";
 var K=[
 {n:"El río Bermejo",k:["bermejo","rio","aguas rojizas","anillo","murallon","espigon","1982","creciente"],
  t:"El Bermejo es el río que marca a El Colorado: de aguas rojizas, color tierra, y con una dinámica que obligó al pueblo a defenderse. Hoy lo protege un “anillo” de defensas, con murallón y espigones, y se recuerda la gran crecida de 1982.",s:"Instructivo de Prácticas Profesionalizantes N.º 35 (ISFDyT)"},
 {n:"El nombre y la leyenda de los dos hermanos",k:["nombre","hermanos","leyenda","origen","gigena","bautismo","por que se llama"],
  t:"El nombre se vincula con el río Bermejo y con una leyenda indígena sobre dos hermanos que se disputaban la tierra. La “Colonia El Colorado” fue bautizada así por Gigena Centeno en 1937. Los detalles del relato varían según quien lo cuente, así que tomalo como tradición oral.",s:D},
 {n:"El oro blanco: el algodón",k:["algodon","oro blanco","desmotadora","bunge","anderson","fiesta del algodon"],
- t:"El algodón fue el “oro blanco” de la zona: el auge arrancó hacia 1930 y llegaron empresas como Bunge & Born y Anderson Clayton. En 1939 se instaló la Desmotadora Oficial del Km 190, que ayudó a defender el precio del textil. Y en 1947 se hizo la primera Fiesta del Algodón.",s:D+" y efemérides del curso"},
+ t:"El algodón fue el “oro blanco” de la zona: el auge arrancó hacia 1930 y llegaron empresas como Bunge & Born y Anderson Clayton. En 1939 se instaló la Desmotadora Oficial del Km 190, que ayudó a defender el precio del textil. Y en 1947 se hizo la primera Fiesta del Algodón.",s:D+" y efemérides locales"},
 {n:"Flora Prijmenco",k:["flora","prijmenco","upa","rusa","rusos","vajilla","almacen"],
  t:"Flora Prijmenco forma parte de una historia de familias rusas exiliadas tras la revolución, que levantaron el primer almacén del pueblo nuevo. Se la recuerda por su vajilla de plata y por un final trágico. Es un tema delicado, así que prefiero contarlo con respeto y sin inventar detalles.",s:D},
 {n:"Las hermanas Putero y la radio sin ondas",k:["putero","radio","altoparlante","parlante","publicidad el colorado"],
@@ -80,9 +80,9 @@ var K=[
 {n:"El sargento Pedro Barraza",k:["barraza","sargento","comisaria","cuatreros","ford a","tierra de nadie"],
  t:"En 1936 el sargento Pedro Barraza fundó la Sub-Comisaría Bermejo, después de viajar 18 horas en un Ford A. Puso orden en el llamado “Paso de los Cuatreros”, que era casi tierra de nadie.",s:D},
 {n:"La cooperativa",k:["cooperativa","agua potable","servicios publicos"],
- t:"La Cooperativa de Servicios Públicos nació como símbolo de organización comunitaria, y con ella llegó el agua potable en 1968. Ojo: entre mis fuentes hay una diferencia sobre el año de fundación, así que conviene confirmarlo antes de citarlo.",s:D+" y efemérides del curso"},
+ t:"La Cooperativa de Servicios Públicos nació como símbolo de organización comunitaria, y con ella llegó el agua potable en 1968. Ojo: entre mis fuentes hay una diferencia sobre el año de fundación, así que conviene confirmarlo antes de citarlo.",s:D+" y efemérides locales"},
 {n:"Las escuelas y los primeros servicios",k:["escuela","116","galvan","chacra","registro civil","estafeta","correo","fomento","juzgado","san antonio","patrono"],
- t:"Algunas fechas de la efemérides local: la Escuela N.º 116 se creó en 1936 y empezó a dar clases en El Colorado el 13 de octubre de 1942; el Registro Civil abrió en 1938; Don Carlos Galván llegó en 1942 como director de la Chacra Experimental; en 1944 se formó la primera Comisión de Fomento. Y cada 13 de junio se celebra a San Antonio de Padua, patrono del pueblo.",s:"Efemérides “Mes por mes” elaboradas en clase"},
+ t:"Algunas fechas de la efemérides local: la Escuela N.º 116 se creó en 1936 y empezó a dar clases en El Colorado el 13 de octubre de 1942; el Registro Civil abrió en 1938; Don Carlos Galván llegó en 1942 como director de la Chacra Experimental; en 1944 se formó la primera Comisión de Fomento. Y cada 13 de junio se celebra a San Antonio de Padua, patrono del pueblo.",s:"Efemérides “Mes por mes” de El Colorado"},
 {n:"Jei Tico la Vieja (personaje popular)",k:["jei tico","tico la vieja","jei","tico","duro duro","dyuro","homenaje en vida"],
  t:"Jei Tico la Vieja es un personaje popular muy querido de El Colorado, recordado por su carisma, su buen humor y sus saludos en la calle. Una página de la comunidad le hace un “homenaje en vida” y difunde sus frases, como “¡Jei Tico la vieja!” y “duro, duro, duro”. Es una persona viva, así que solo cuento lo público y con cariño: nada de su vida privada.",s:"Página de Facebook “Jei Tico la Vieja” (homenaje de la comunidad). Información a confirmar con sus autores"},
 {n:"Personajes populares (relato pendiente)",k:["china","gutierrez","loco de la bandera","personaje","personajes","leyendas urbanas"],
@@ -107,7 +107,7 @@ function responder(raw){
  K.forEach(function(x){var n=0;x.k.forEach(function(w){if((" "+t+" ").indexOf(" "+w)>-1||t.indexOf(w)>-1&&w.length>5)n+=w.length>5?2:1});if(n>sc){sc=n;best=x}});
  if(best)return{t:best.t,s:best.s};
  if(has(t,AYUDA))return{t:"Puedo contarte sobre:\n"+temas()+"\n\nElegí uno o escribime tu pregunta."};
- if(has(t,HOLA))return{t:"¡Hola, compoblano! Soy Beto, un humano digital: una IA con fines educativos, no una persona de carne y hueso. Cuento historias de El Colorado basadas en fuentes de clase. ¿Por dónde empezamos?"};
+ if(has(t,HOLA))return{t:"¡Hola, compoblano! Soy Beto, un humano digital: una IA con fines educativos, no una persona de carne y hueso. Cuento historias de El Colorado basadas en fuentes de historia local. ¿Por dónde empezamos?"};
  return{t:"Mmm, de eso no tengo nada cargado y no quiero inventarte cosas. Probá con el río, el algodón, el puente o las casas redondas, o escribí “temas” para ver todo lo que sé."};
 }
 // ===== INTERFAZ =====
@@ -130,7 +130,7 @@ if(!SR){mic.style.display='none'}else{mic.addEventListener('click',function(){
  rec.start()})}
 var ch=document.getElementById("chips");
 ["El río Bermejo","El algodón","El Puente Libertad","Casas redondas","Personajes","Temas"].forEach(function(c){var b=document.createElement("button");b.type="button";b.textContent=c;b.onclick=function(){preguntar(c.toLowerCase())};ch.appendChild(b)});
-add("¡Hola, che! Soy Beto Gómez, cronista de El Colorado. Aviso de entrada: soy un humano digital, una inteligencia artificial educativa, no una persona real. Te cuento historias del pueblo a partir de fuentes de clase, y si no sé algo, te lo digo en vez de inventar. ¿Qué te gustaría saber?","b");
+add("¡Hola, che! Soy Beto Gómez, cronista de El Colorado. Aviso de entrada: soy un humano digital, una inteligencia artificial educativa, no una persona real. Te cuento historias del pueblo a partir de fuentes de historia local, y si no sé algo, te lo digo en vez de inventar. ¿Qué te gustaría saber?","b");
 </script>
 </body>
 </html>
