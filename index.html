@@ -31,6 +31,8 @@ h1{font-size:18px;margin:0}
 form{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--line)}
 input{flex:1;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:16px system-ui,sans-serif}
 form button{background:var(--acc);color:var(--acc-ink);border:0;border-radius:10px;padding:0 18px;font-weight:bold;cursor:pointer}
+form button#mic{background:var(--bubble);color:var(--ink);border:1px solid var(--line);padding:0 14px;font-size:20px}
+form button#mic.on{background:#c0392b;color:#fff}
 footer{font:11px/1.4 system-ui,sans-serif;color:var(--muted);padding:0 14px 8px;text-align:center}
 </style>
 </head>
@@ -44,8 +46,8 @@ footer{font:11px/1.4 system-ui,sans-serif;color:var(--muted);padding:0 14px 8px;
 <div class="aviso"><b>Transparencia:</b> Beto es un <b>humano digital educativo</b>, una inteligencia artificial creada para un trabajo de Ética con fines culturales. No es una persona real. Sus respuestas son breves resúmenes de fuentes de clase y pueden tener imprecisiones: si detectás un error, es involuntario y se corrige.</div>
 <div id="chat" role="log" aria-live="polite"></div>
 <div class="chips" id="chips"></div>
-<form id="f"><input id="q" autocomplete="off" placeholder="Preguntale algo a Beto…" aria-label="Tu pregunta"><button>Enviar</button></form>
-<footer>Esta página no guarda tus mensajes ni datos personales: todo ocurre en tu dispositivo.</footer>
+<form id="f"><input id="q" autocomplete="off" placeholder="Preguntale algo a Beto…" aria-label="Tu pregunta"><button type="button" id="mic" title="Hablar con Beto" aria-label="Hablar con Beto">🎤</button><button>Enviar</button></form>
+<footer>Esta página no guarda tus mensajes ni datos personales. Si usás el micrófono, tu navegador procesa el audio para pasarlo a texto (Chrome, por ejemplo, usa servicios de Google); Beto no recibe ni guarda tu audio.</footer>
 </div>
 <script>
 // ===== BASE DE CONOCIMIENTO =====
@@ -111,10 +113,21 @@ function responder(raw){
 // ===== INTERFAZ =====
 var chat=document.getElementById("chat"),q=document.getElementById("q"),av=document.getElementById("av"),vz=document.getElementById("vz"),voz=false;
 function add(txt,cl,src){var d=document.createElement("div");d.className="m "+cl;d.textContent=txt;if(src){var f=document.createElement("span");f.className="f";f.textContent="Fuente: "+src;d.appendChild(f)}chat.appendChild(d);chat.scrollTop=chat.scrollHeight}
-function hablar(t){if(!voz||!("speechSynthesis" in window))return;speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang="es-AR";u.onstart=function(){av.classList.add("talk")};u.onend=function(){av.classList.remove("talk")};speechSynthesis.speak(u)}
+function mejorVoz(){if(!('speechSynthesis' in window))return null;var vs=speechSynthesis.getVoices().filter(function(v){return /^es/i.test(v.lang)});var best=null,bs=-1;vs.forEach(function(v){var s=0,l=v.lang.replace('_','-').toLowerCase(),n=v.name.toLowerCase();if(l==='es-ar')s+=50;else if(l==='es-uy'||l==='es-py'||l==='es-cl')s+=30;else if(l==='es-us'||l==='es-419'||l==='es-mx')s+=20;else s+=5;if(/natural|neural|online|google/.test(n))s+=20;if(/tomas|jorge|diego|juan|carlos|pablo|alvaro|raul|male|hombre/.test(n))s+=10;if(s>bs){bs=s;best=v}});return best}
+function hablar(t){if(!voz||!("speechSynthesis" in window))return;speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang="es-AR";var vv=mejorVoz();if(vv){u.voice=vv;u.lang=vv.lang}u.rate=1.06;u.pitch=0.95;u.onstart=function(){av.classList.add("talk")};u.onend=function(){av.classList.remove("talk")};speechSynthesis.speak(u)}
 function preguntar(txt){txt=txt.trim();if(!txt)return;add(txt,"u");var r=responder(txt);setTimeout(function(){add(r.t,"b",r.s);hablar(r.t)},350)}
 document.getElementById("f").addEventListener("submit",function(e){e.preventDefault();preguntar(q.value);q.value=""});
 vz.addEventListener("click",function(){voz=!voz;vz.textContent=voz?"🔊":"🔇";if(!voz&&"speechSynthesis" in window)speechSynthesis.cancel()});
+var mic=document.getElementById('mic'),SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null;
+if(!SR){mic.style.display='none'}else{mic.addEventListener('click',function(){
+ if(rec){rec.stop();return}
+ voz=true;vz.textContent='🔊';if('speechSynthesis' in window)speechSynthesis.cancel();
+ rec=new SR();rec.lang='es-AR';rec.interimResults=false;rec.maxAlternatives=1;
+ rec.onstart=function(){mic.classList.add('on');q.placeholder='Escuchando…'};
+ rec.onresult=function(e){preguntar(e.results[0][0].transcript)};
+ rec.onerror=function(e){add(e.error==='not-allowed'?'No tengo permiso para usar el micrófono. Habilitalo en el navegador y probá de nuevo, o escribime.':'No te pude escuchar bien, ¿probamos otra vez?','b')};
+ rec.onend=function(){mic.classList.remove('on');q.placeholder='Preguntale algo a Beto…';rec=null};
+ rec.start()})}
 var ch=document.getElementById("chips");
 ["El río Bermejo","El algodón","El Puente Libertad","Casas redondas","Personajes","Temas"].forEach(function(c){var b=document.createElement("button");b.type="button";b.textContent=c;b.onclick=function(){preguntar(c.toLowerCase())};ch.appendChild(b)});
 add("¡Hola, che! Soy Beto Gómez, cronista de El Colorado. Aviso de entrada: soy un humano digital, una inteligencia artificial educativa, no una persona real. Te cuento historias del pueblo a partir de fuentes de clase, y si no sé algo, te lo digo en vez de inventar. ¿Qué te gustaría saber?","b");
